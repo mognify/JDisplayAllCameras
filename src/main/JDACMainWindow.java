@@ -12,15 +12,23 @@ import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.JLabel;
 
 public class JDACMainWindow {
+	public static int refresh = 60;
+	public static boolean motionDetection = false;
+	public static String strDisplayLayout = "lateral";
 
 	private JFrame frame;
 	private JPanel panel_1;
@@ -70,7 +78,7 @@ public class JDACMainWindow {
 
 		for (Webcam webcam : Webcam.getWebcams()) {
 			int camsize = webcam.getViewSizes().length-1;
-			webcam.setViewSize(webcam.getViewSizes()[camsize]);//WebcamResolution.QVGA.getSize());
+			webcam.setViewSize(webcam.getViewSizes()[camsize]);
 			System.out.println(webcam.getViewSizes()[camsize]);
 			WebcamPanel panel = new WebcamPanel(webcam, false);
 			panel.setDrawMode(DrawMode.FILL);
@@ -81,20 +89,18 @@ public class JDACMainWindow {
 		for(int i = panels.size()-1; i > 0; i--)
 			panel_1.add(panels.get(i));
 
-		frame.setTitle("Few Cameras At Once");
+		frame.setTitle("JDAC (Java, Display All Cameras)");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
-		JCheckBox chckbxNewCheckBox = new JCheckBox("Record");
-		menuBar.add(chckbxNewCheckBox);
+		JMenu mnNewMenu = new JMenu("Settings");
+		menuBar.add(mnNewMenu);
 		
-		JButton btnNewButton = new JButton("Restart");
-		menuBar.add(btnNewButton);
-		btnNewButton.addActionListener(new ActionListener() {
-
+		JMenuItem mntmNewMenuItem = new JMenuItem("Refresh cameras");
+		mntmNewMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (WebcamPanel panel : panels) {
@@ -111,6 +117,55 @@ public class JDACMainWindow {
 			}
 		});
 		
+		JCheckBox chckbxNewCheckBox_3 = new JCheckBox("Default to these settings");
+		mnNewMenu.add(chckbxNewCheckBox_3);
+		
+		JSeparator separator_2 = new JSeparator();
+		mnNewMenu.add(separator_2);
+		mnNewMenu.add(mntmNewMenuItem);
+		
+		JMenuItem mntmRestartInterval = new JMenuItem("Set refresh interval (current: " + refresh + "mins)");
+		mntmRestartInterval.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		mnNewMenu.add(mntmRestartInterval);
+		
+		JSeparator separator = new JSeparator();
+		mnNewMenu.add(separator);
+		
+		JCheckBox chckbxNewCheckBox = new JCheckBox("Record");
+		mnNewMenu.add(chckbxNewCheckBox);
+		
+		JCheckBox chckbxNewCheckBox_2 = new JCheckBox("Only record when motion detected");
+		chckbxNewCheckBox_2.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				motionDetection = !motionDetection;
+			}
+		});
+		mnNewMenu.add(chckbxNewCheckBox_2);
+		
+		JCheckBox chckbxNewCheckBox_1 = new JCheckBox("Show timestamps (will appear in recordings)");
+		mnNewMenu.add(chckbxNewCheckBox_1);
+		
+		JSeparator separator_1 = new JSeparator();
+		mnNewMenu.add(separator_1);
+		
+		JLabel lblNewLabel = new JLabel("      Current display layout: " + strDisplayLayout);
+		mnNewMenu.add(lblNewLabel);
+		
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Horizontally");
+		mnNewMenu.add(mntmNewMenuItem_1);
+		
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Laterally");
+		mnNewMenu.add(mntmNewMenuItem_2);
+		
+		JMenuItem mntmNewMenuItem_3 = new JMenuItem("Grid (horizontal preference)");
+		mnNewMenu.add(mntmNewMenuItem_3);
+		
+		JMenuItem mntmNewMenuItem_4 = new JMenuItem("Grid (lateral preference)");
+		mnNewMenu.add(mntmNewMenuItem_4);
+		
 		frame.setVisible(true);
 		new Thread()
 		{
@@ -120,7 +175,7 @@ public class JDACMainWindow {
 				}
 				long start = System.currentTimeMillis();
 				do {
-					if(System.currentTimeMillis() - start > 3600000) break;
+					if(((System.currentTimeMillis() - start)/60000) > refresh) break;
 				}while(true);
 				for(WebcamPanel wp : panels) {
 					wp.getWebcam().close();
