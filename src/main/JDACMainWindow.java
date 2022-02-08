@@ -142,7 +142,9 @@ public class JDACMainWindow {
 		
 		JSeparator separator = new JSeparator();
 		mnNewMenu.add(separator);
-		
+
+		// https://coderanch.com/t/470601/java/screenshot-JPanel
+		// https://tips4java.wordpress.com/2008/10/13/screen-image/
 		JCheckBox chckbxNewCheckBox = new JCheckBox("Record");
 		mnNewMenu.add(chckbxNewCheckBox);
 		
