@@ -14,6 +14,8 @@ import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -22,8 +24,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.NumberFormatter;
 import javax.swing.event.ChangeEvent;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
 
 public class JDACMainWindow {
 	public static int refresh = 60;
@@ -124,12 +128,17 @@ public class JDACMainWindow {
 		mnNewMenu.add(separator_2);
 		mnNewMenu.add(mntmNewMenuItem);
 		
-		JMenuItem mntmRestartInterval = new JMenuItem("Set refresh interval (current: " + refresh + "mins)");
-		mntmRestartInterval.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		mnNewMenu.add(mntmRestartInterval);
+		/*
+		 * this memory leak is a result of the API im using.
+		 */
+		JLabel lblNewLabel_1 = new JLabel("Auto-refresh interval in minutes (more frequent = less RAM usage): ");
+		mnNewMenu.add(lblNewLabel_1);
+		
+		JSpinner spinner = new JSpinner();
+		spinner.setValue(refresh);
+		JFormattedTextField txt = ((JSpinner.NumberEditor) spinner.getEditor()).getTextField();
+		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
+		mnNewMenu.add(spinner);
 		
 		JSeparator separator = new JSeparator();
 		mnNewMenu.add(separator);
@@ -144,6 +153,9 @@ public class JDACMainWindow {
 			}
 		});
 		mnNewMenu.add(chckbxNewCheckBox_2);
+		
+		JCheckBox chckbxNewCheckBox_4 = new JCheckBox("PNG format instead of JPG (higher quality, more data)");
+		mnNewMenu.add(chckbxNewCheckBox_4);
 		
 		JCheckBox chckbxNewCheckBox_1 = new JCheckBox("Show timestamps (will appear in recordings)");
 		mnNewMenu.add(chckbxNewCheckBox_1);
