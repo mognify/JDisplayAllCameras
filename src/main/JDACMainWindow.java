@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,8 @@ import javax.swing.JFrame;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPanel.DrawMode;
+import com.github.sarxos.webcam.WebcamResolution;
+
 import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
@@ -81,9 +84,8 @@ public class JDACMainWindow {
 		frame.getContentPane().add(panel_1);
 
 		for (Webcam webcam : Webcam.getWebcams()) {
-			int camsize = webcam.getViewSizes().length-1;
-			webcam.setViewSize(webcam.getViewSizes()[camsize]);
-			System.out.println(webcam.getViewSizes()[camsize]);
+			webcam.setCustomViewSizes(new Dimension[] {WebcamResolution.HD.getSize()});
+			webcam.setViewSize(WebcamResolution.HD.getSize());
 			WebcamPanel panel = new WebcamPanel(webcam, false);
 			panel.setDrawMode(DrawMode.FILL);
 
